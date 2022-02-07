@@ -25,7 +25,7 @@ namespace Kernel
 
         public void WriteRegister(ushort Register, ushort Value)
         {
-            PCI.WriteRegister16(Bus, Slot, Function, (byte)Register, (ushort)(ReadRegister(Register) | Value));
+            PCI.WriteRegister16(Bus, Slot, Function, (byte)Register, Value);
         }
 
         public ushort ReadRegister(ushort Register)
