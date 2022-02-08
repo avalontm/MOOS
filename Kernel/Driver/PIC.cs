@@ -16,6 +16,7 @@
             Native.Out8(0x21, 0x01);
             Native.Out8(0xA1, 0x01);
 
+            //Disable PIC
             Native.Out8(0x21, 0xFF);
             Native.Out8(0xA1, 0xFF);
         }
