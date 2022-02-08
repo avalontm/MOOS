@@ -96,12 +96,14 @@ namespace Kernel.Driver
             public ulong ExtendedMaximumCapacity;
         }
 
-        public static void Initialise()
+        public static void Initialise(ulong _p)
         {
-            byte* p = (byte*)0xF0000;
-            while (*(uint*)p != 0x5F4D535F) p++;
-            Console.WriteLine("SMBIOS entry found!");
-
+            if(_p == 0) 
+            {
+                Console.WriteLine("Can't initialize SMBIOS");
+                return;
+            }
+            byte* p = (byte*)_p;
             SMBIOSEntryPoint* entry = (SMBIOSEntryPoint*)p;
 
             p = (byte*)entry->TableAddress;

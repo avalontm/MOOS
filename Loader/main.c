@@ -21,7 +21,7 @@ static CHAR16* ArchName = L"32-bit ARM";
 
 #define PAGES(size)					(size >> 12)+((size & 0xFFF)==0 ? 0:1)
 
-struct BOOTINFO
+struct LoaderInfo
 {
 	UINT64 Framebuffer;
 	UINT32 Width;
@@ -29,6 +29,8 @@ struct BOOTINFO
 	UINT64 MemoryStart;
 	UINT64 NumPages;
 	UINT64 Modules;
+	UINT64 RSDP;
+	UINT64 SMBIOS;
 } bootinfo;
 
 #define UEFI_MMAP_SIZE 0x4000
@@ -52,6 +54,8 @@ struct _MY_IMAGE_SECTION_HEADER {
 	UINT16 NumberOfLineNumbers;
 	UINT32 Characteristics;
 };
+
+#define efi_guidcmp(_a, _b) memcmp((_a), (_b), sizeof(EFI_GUID))
 
 // Application entrypoint (must be set to 'efi_main' for gnu-efi crt0 compatibility)
 EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
@@ -146,6 +150,50 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	Print(L"GOP height: %d\r\n", height);
 	Print(L"GOP fb: 0x%x\r\n", fb);
 
+	EFI_GUID smbios1_guid = SMBIOS_TABLE_GUID;
+	EFI_GUID smbios3_guid = SMBIOS3_TABLE_GUID;
+	UINT64 smbios = 0;
+
+	EFI_GUID acpi1_guid = ACPI_TABLE_GUID;
+	EFI_GUID acpi2_guid = ACPI_20_TABLE_GUID;
+	UINT64 rsdp = 0;
+
+	for(UINTN i = 0;i<ST->NumberOfTableEntries;i++)
+	{
+		if (efi_guidcmp(&smbios3_guid,
+			&ST->ConfigurationTable[i].VendorGuid) == 0)
+		{
+			Print(L"SMBIOS 3.0 Table Found!\r\n");
+			smbios = ST->ConfigurationTable[i].VendorTable;
+		}
+		if (efi_guidcmp(&smbios1_guid,
+			&ST->ConfigurationTable[i].VendorGuid) == 0)
+		{
+			Print(L"SMBIOS 1.0 Table Found!\r\n");
+			if (smbios == 0)
+			{
+				smbios = ST->ConfigurationTable[i].VendorTable;
+			}
+		}
+
+		if (efi_guidcmp(&acpi2_guid,
+			 &ST->ConfigurationTable[i].VendorGuid) == 0)
+		{
+			Print(L"ACPI 2.0 Table Found!\r\n");
+			rsdp = ST->ConfigurationTable[i].VendorTable;
+		}
+		if (efi_guidcmp(&acpi1_guid,
+			&ST->ConfigurationTable[i].VendorGuid) == 0)
+		{
+			Print(L"ACPI 1.0 Table Found!\r\n");
+			if(rsdp == 0)
+			{
+				rsdp = ST->ConfigurationTable[i].VendorTable;
+			}
+		}
+	}
+	if (rsdp == 0) { Print(L"Can't find ACPI table\r\n"); for (;;); }
+
 	//https://blog.llandsmeer.com/tech/2019/07/21/uefi-x64-userland.html
 	/* call GetMemoryMap(size, buffer, mapkey, desc_size, desc_version) */
 	uefi_mmap.nbytes = UEFI_MMAP_SIZE;
@@ -181,11 +229,23 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	bootinfo.MemoryStart = best_alloc_start;
 	bootinfo.NumPages = best_number_of_pages;
 	bootinfo.Modules = modules;
+	bootinfo.RSDP = rsdp;
+	bootinfo.SMBIOS = smbios;
 
-	void (*entry)(struct BOOTINFO*) = (nthdr->OptionalHeader.ImageBase + nthdr->OptionalHeader.AddressOfEntryPoint);
+	void (*entry)(struct LoaderInfo*) = (nthdr->OptionalHeader.ImageBase + nthdr->OptionalHeader.AddressOfEntryPoint);
 	(*entry)(&bootinfo);
 
 	for (;;);
 
 	return EFI_SUCCESS;
+}
+
+int memcmp(char* a, char* b, UINT64 size)
+{
+	for(UINT64 i = 0;i<size;i++)
+	{
+		if (a[i] != b[i])
+			return 1;
+	}
+	return 0;
 }

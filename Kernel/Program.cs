@@ -10,7 +10,7 @@ using System.Windows.Forms;
 unsafe class Program
 {
     [StructLayout(LayoutKind.Sequential,Pack = 1)]
-    struct BootInfo
+    struct LoaderInfo
     {
         public ulong Framebuffer;
         public uint Width;
@@ -18,21 +18,23 @@ unsafe class Program
         public ulong MemoryStart;
         public ulong NumPages;
         public ulong Modules;
+        public ulong RSDP;
+        public ulong SMBIOS;
     }
 
     static void Main() { }
 
     [RuntimeExport("Main")]
-    static void Main(BootInfo* bootinfo)
+    static void Main(LoaderInfo* info)
     {
-        Allocator.Initialize((IntPtr)bootinfo->MemoryStart);
+        Allocator.Initialize((IntPtr)info->MemoryStart);
 
-        StartupCodeHelpers.InitializeModules((IntPtr)bootinfo->Modules);
+        StartupCodeHelpers.InitializeModules((IntPtr)info->Modules);
 
         ASC16.Initialise();
 
-        Framebuffer.VideoMemory = (uint*)bootinfo->Framebuffer;
-        Framebuffer.SetVideoMode(bootinfo->Width, bootinfo->Height);
+        Framebuffer.VideoMemory = (uint*)info->Framebuffer;
+        Framebuffer.SetVideoMode(info->Width, info->Height);
         Framebuffer.Clear(0x0);
 
         Console.Setup();
@@ -41,11 +43,21 @@ unsafe class Program
         IDT.Initialise();
         IDT.Enable();
 
-        Serial.Initialise();
+        SMBIOS.Initialise(info->SMBIOS);
+        ACPI.Initialize(info->RSDP);
+        PIC.Initialize();
+        LocalAPIC.Initialize();
+        IOAPIC.Initialize();
         PIT.Initialise();
+        
+        IOAPIC.SetEntry(0x20);
+        IOAPIC.SetEntry(0x21);
+        IOAPIC.SetEntry(0x2C);
+
+        SMP.Initialize();
+
+        Serial.Initialise();
         PS2Mouse.Initialise();
-        ACPI.Initialize();
-        SMBIOS.Initialise();
 
         PCI.Initialise();
         SATA.Initialize();
@@ -63,7 +75,7 @@ unsafe class Program
         */
 
         Console.Write("Num Pages: ");
-        Console.WriteLine(bootinfo->NumPages.ToString());
+        Console.WriteLine(info->NumPages.ToString());
         Serial.WriteLine("Hello World");
         Console.WriteLine("Hello, World!");
         Console.WriteLine("Use Native AOT (Core RT) Technology.");

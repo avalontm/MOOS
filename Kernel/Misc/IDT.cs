@@ -41,8 +41,6 @@ public static class IDT
     {
         idt = new IDTEntry[256];
 
-        PIC.Enable();
-
         // TODO: Figure out a way to do this in C#
         set_idt_entries(Unsafe.AsPointer(ref idt[0]));
 
@@ -137,6 +135,7 @@ public static class IDT
         {
             Intel8254X.OnInterrupt();
         }
-        PIC.EndOfInterrupt(irq);
+
+        LocalAPIC.EndOfInterrupt();
     }
 }
