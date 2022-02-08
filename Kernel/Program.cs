@@ -54,8 +54,6 @@ unsafe class Program
         IOAPIC.SetEntry(0x21);
         IOAPIC.SetEntry(0x2C);
 
-        SMP.Initialize();
-
         Serial.Initialise();
         PS2Mouse.Initialise();
 
