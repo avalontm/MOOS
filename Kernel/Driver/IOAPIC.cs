@@ -17,6 +17,7 @@ namespace Kernel.Driver
             if(ACPI.IO_APIC == null) 
             {
                 Console.WriteLine("Can't initialize I/O APIC");
+                for (; ; );
                 return;
             }
             uint value = In(IOAPICVER);
