@@ -142,6 +142,17 @@ EFI_STATUS efi_main(EFI_HANDLE ImageHandle, EFI_SYSTEM_TABLE* SystemTable)
 	sts = uefi_call_wrapper(BS->LocateProtocol, 3, &gop_guid, NULL, &gop);
 	if (EFI_ERROR(sts)) { Print(L"Can't locate graphics output protocol\r\n"); for (;;); }
 
+	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
+	UINTN sizeofInfo = 0;
+	for(UINT32 i = 0;i<gop->Mode->MaxMode;i++)
+	{
+		uefi_call_wrapper(gop->QueryMode, 4, gop, i, &sizeofInfo, &info);
+		if (info->HorizontalResolution == 1024 && info->VerticalResolution == 768)
+		{
+			uefi_call_wrapper(gop->SetMode, 2, gop, i);
+		}
+	}
+
 	UINT32 width = gop->Mode->Info->HorizontalResolution;
 	UINT32 height = gop->Mode->Info->VerticalResolution;
 	UINT64 fb = gop->Mode->FrameBufferBase;
