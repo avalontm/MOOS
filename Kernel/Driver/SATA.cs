@@ -192,6 +192,7 @@ namespace Kernel
             }
             #endregion
             if (dev == null) return;
+            dev.WriteRegister(0x04, 0x04 | 0x02 | 0x01);
             Ports = new List<SATADevice>();
             Console.WriteLine("SATA Controller Found!");
             Controller = (HBA*)dev.Bar5;
