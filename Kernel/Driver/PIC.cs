@@ -2,7 +2,7 @@
 {
     public static class PIC
     {
-        public static void Initialize()
+        public static void Disable()
         {
             Native.Out8(0x20, 0x11);
             Native.Out8(0xA0, 0x11);

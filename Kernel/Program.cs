@@ -45,14 +45,11 @@ unsafe class Program
 
         SMBIOS.Initialise(info->SMBIOS);
         ACPI.Initialize(info->RSDP);
-        PIC.Initialize();
+        PIC.Disable();
         LocalAPIC.Initialize();
         IOAPIC.Initialize();
+
         PIT.Initialise();
-        
-        IOAPIC.SetEntry(0x20);
-        IOAPIC.SetEntry(0x21);
-        IOAPIC.SetEntry(0x2C);
 
         Serial.Initialise();
         PS2Mouse.Initialise();
