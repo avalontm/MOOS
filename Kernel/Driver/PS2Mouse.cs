@@ -1,5 +1,6 @@
 ﻿using System.Windows.Forms;
 using static Native;
+using Kernel.Driver;
 
 namespace Kernel
 {

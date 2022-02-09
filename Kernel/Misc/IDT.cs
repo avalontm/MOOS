@@ -53,9 +53,6 @@ public static class IDT
 
         Native.Load_IDT(ref idtr);
 
-        //Enable keyboard interrupts
-        IOAPIC.SetEntry(0x21);
-
         Initialised = true;
     }
 

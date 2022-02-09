@@ -2,6 +2,7 @@
 using Kernel;
 using Kernel.Driver;
 using Kernel.GUI;
+using Kernel.NET;
 using System;
 using System.Runtime;
 using System.Runtime.InteropServices;
@@ -49,6 +50,9 @@ unsafe class Program
         LocalAPIC.Initialize();
         IOAPIC.Initialize();
 
+        //Enable keyboard interrupts
+        IOAPIC.SetEntry(0x21);
+
         PIT.Initialise();
 
         Serial.Initialise();
@@ -58,6 +62,8 @@ unsafe class Program
         SATA.Initialize();
 
         IDE.Initialize();
+
+        RTL8139.Initialise();
 
         /*
         Console.WriteLine(
