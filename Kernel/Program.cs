@@ -4,6 +4,7 @@ using Kernel.Driver;
 using Kernel.GUI;
 using Kernel.NET;
 using System;
+using System.Net;
 using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
@@ -63,7 +64,12 @@ unsafe class Program
 
         IDE.Initialize();
 
+        /*
+        ARP.Initialise();
+        Network.Initialise(IPAddress.Parse(192, 168, 137, 188), IPAddress.Parse(192, 168, 137, 1));
         RTL8139.Initialise();
+        ARP.Require(Network.Gateway);
+        */
 
         /*
         Console.WriteLine(

@@ -124,7 +124,10 @@ namespace Kernel.Driver
 
             Network.MAC = MAC;
             IOAPIC.SetEntry(device.IRQ);
-            IRQ = device.IRQ;
+
+            //Before resolving UEFI's PCI irq problem. we can only use PIT timer's interrupt
+            IRQ = 0x20;
+            //IRQ = device.IRQ;
         }
 
         private static void TXInitialize()

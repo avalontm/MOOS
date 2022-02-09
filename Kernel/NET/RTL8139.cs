@@ -70,8 +70,12 @@ namespace Kernel.NET
             Console.WriteLine(((ulong)MAC[5]).ToStringHex());
 
             Network.MAC = MAC;
-            IRQ = dev.IRQ;
+
             IOAPIC.SetEntry(dev.IRQ);
+
+            //Before resolving UEFI's PCI irq problem. we can only use PIT timer's interrupt
+            IRQ = 0x20;
+            //IRQ = dev.IRQ;
         }
 
         public static void OnInterrupt()
