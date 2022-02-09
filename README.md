@@ -1,4 +1,4 @@
-C# operating system demo, Using Native AOT (Core RT) boot using UEFI    
+C# operating system demo, Using Native AOT (Core RT) boot using UEFI **NOT STABLE**    
  - [x] PS2 Keyboard/Mouse(USB Compatible)
  - [x] Nintendo Family Computer Emulator
  - [x] Intel® Gigabit Ethernet Network 
