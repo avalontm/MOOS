@@ -1,4 +1,7 @@
-﻿using System.Windows.Forms;
+/*
+ * Copyright(c) 2022 nifanfa, This code is part of the OS-Sharp licensed under the MIT licence.
+ */
+using System.Windows.Forms;
 using static Native;
 using Kernel.Driver;
 
