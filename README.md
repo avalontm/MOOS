@@ -1,5 +1,9 @@
 **Discord Server: https://discord.gg/GxwmAK7aRE**  
 C# operating system demo, using Native AOT (Core RT) boot via GNU-EFI  
+| Screenshot |
+| ---------- |
+| ![image](https://github.com/nifanfa/Solution1/blob/uefi/Screenshot.png) |
+
 | Items | Implemented | Working On Real Hardware (Tested on Supermicro X9DRI-LN4F+) | Note |
 | ----- | ----------- | ----------------------------------------------------------- | ----- |
 | Error Throwing / Catching | ❌ | ❌ |
@@ -19,4 +23,3 @@ C# operating system demo, using Native AOT (Core RT) boot via GNU-EFI
 | UDP | ✅ | ❓ |
 | Lan | ✅ | ❓ |
 | Wan | ✅ | ❓ |
-| ![image](https://github.com/nifanfa/Solution1/blob/uefi/Screenshot.png) | | | **Solution1 On Virtual Box** |
